@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "An Ethereum Marketplace",
     "author": "gregory@dappuniversity.com",
-	"homepage" : "http://tklinh2002.github.io/Group1_BuildSocialNetWork",
+    "homepage": "http://tklinh2002.github.io/Group1_BuildSocialNetWork",
     "dependencies": {
         "babel-polyfill": "6.26.0",
         "babel-preset-env": "1.7.0",
@@ -29,7 +29,9 @@
         "start": "react-scripts --openssl-legacy-provider start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "eslintConfig": {
         "extends": "react-app"
