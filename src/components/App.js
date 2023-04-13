@@ -8,7 +8,7 @@ import Main from './Main'
 
 class App extends Component {
 
-  async componentWillMount() {
+  async componentWillMount(){
     await this.loadWeb3()
     await this.loadBlockchainData()
   }
@@ -17,10 +17,10 @@ class App extends Component {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum)
       await window.ethereum.enable()
-      console.log(123)
+
     }
     else if (window.web3) {
-      console.log(456)
+
       window.web3 = new Web3(window.web3.currentProvider)
     }
     else {
@@ -36,9 +36,9 @@ class App extends Component {
     this.setState({ account: accounts[0] })
     // Network ID
     const networkId = await web3.eth.net.getId()
-    console.log('networkId ' + networkId)
+
     const networkData = SocialNetwork.networks[networkId]
-     console.log('networkdata ' + networkData)
+
     if(networkData) {
       const socialNetwork = web3.eth.Contract(SocialNetwork.abi, networkData.address)
       this.setState({ socialNetwork })
@@ -50,14 +50,13 @@ class App extends Component {
         this.setState({
           posts: [...this.state.posts, post]
         })
-      }
+      } 
       // Sort posts. Show highest tipped posts first
       this.setState({
         posts: this.state.posts.sort((a,b) => b.tipAmount - a.tipAmount )
       })
       this.setState({ loading: false})
     } else {
-
       window.alert('SocialNetwork contract not deployed to detected network.')
     }
   }
@@ -65,6 +64,14 @@ class App extends Component {
   createPost(content) {
     this.setState({ loading: true })
     this.state.socialNetwork.methods.createPost(content).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  votePost(id){
+    this.setState({ loading: true })
+    this.state.socialNetwork.methods.votePost(id).send({ from: this.state.account})
     .once('receipt', (receipt) => {
       this.setState({ loading: false })
     })
@@ -78,6 +85,8 @@ class App extends Component {
     })
   }
 
+  
+
   constructor(props) {
     super(props)
     this.state = {
@@ -85,11 +94,12 @@ class App extends Component {
       socialNetwork: null,
       postCount: 0,
       posts: [],
-      loading: true
+      loading: true,
     }
 
     this.createPost = this.createPost.bind(this)
     this.tipPost = this.tipPost.bind(this)
+    this.votePost = this.votePost.bind(this)
   }
 
   render() {
@@ -100,8 +110,11 @@ class App extends Component {
           ? <div id="loader" className="text-center mt-5"><p>Loading...</p></div>
           : <Main
               posts={this.state.posts}
+              socialNetwork={this.state.socialNetwork}
+              account={this.state.account}
               createPost={this.createPost}
               tipPost={this.tipPost}
+              votePost={this.votePost}
             />
         }
       </div>
