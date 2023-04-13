@@ -1,13 +1,14 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.4.22 <0.9.0;
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract SocialNetwork is ERC20{
+contract SocialNetwork {
     string private _name;
     string private _symbol;
     
     uint public postCount = 0;
     mapping(uint => Post) public posts;
     mapping(address => mapping(uint => bool)) public addressVotes;
+    mapping(uint => mapping (uint => address)) public voterOfPost; 
     struct Post{
         uint id;
         string content;
@@ -37,11 +38,6 @@ contract SocialNetwork is ERC20{
         address authorPost,
         address voter
     );
-    constructor()ERC20("SocialNetwork", "SCC") public{
-        _name = "SocialNetwork";
-        _symbol = "SCC";
-    }
-    
 
     function createPost(string memory _content) public{
         // require valid content
@@ -80,6 +76,7 @@ contract SocialNetwork is ERC20{
         require(addressVotes[voter][_id] == false);
         Post memory _post = posts[_id];
 
+        voterOfPost[_id][_post.vote] = voter;
         _post.vote = _post.vote + 1;
         
         posts[_id] = _post;
